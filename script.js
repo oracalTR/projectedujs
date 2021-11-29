@@ -16,7 +16,7 @@ function AnwerService(textAnswer, placeHold) {
     if(answer.trim()) {
         return answer;
     } else {
-        AnwerService(textAnswer);
+        AnwerService(textAnswer, placeHold);
     }
 }
 
