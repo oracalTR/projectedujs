@@ -1,3 +1,4 @@
+'use strict';
 const title = 'Projectedujs';
 let screens = 'Простые, Сложные, Интерактивные';
 let screenPrice = 1500;
