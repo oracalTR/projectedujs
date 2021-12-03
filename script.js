@@ -37,18 +37,12 @@ function answerPrice(textAnswer) {
         answer = parseInt(prompt(textAnswer));
         if(answer === 'string') {
             answer = answer.trim();
-            // answer = NumparseInt(answer));
-            console.log(isNaN(answer));
-            console.log(isFinite(answer));
         }
-        console.log(typeof answer);
-        console.log('answer: ', answer);
     } while (isNaN(answer) || answer == 0 || answer == "" || answer == null || answer == 'indefined');
     return answer;
 }
 
 const getAllServicePrices = function() {
-    //allServicePrices = service1 + service2;
     let sum = 0;
     for(let i = 1; i < 3; i++) {
         if(i === 1) {
@@ -97,7 +91,6 @@ function showTypeOf(variable) {
 }
 
 asking();
-console.log('title', title);
 getTitle(title);
 allServicePrices = getAllServicePrices();
 getFullPrice(screenPrice, allServicePrices);
