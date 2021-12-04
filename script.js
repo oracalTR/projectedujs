@@ -101,6 +101,6 @@ console.log('allServicePrices: ', allServicePrices);
 console.log('title: ', showTypeOf(title));
 console.log('fullPrice: ', showTypeOf(fullPrice));
 console.log('adaptive: ', showTypeOf(adaptive));
-console.log('Массив screens: ', screens.toLowerCase().split(','));
+console.log('Массив screens: ', screens.toLowerCase().split(' ,'));
 console.log('сообщение о скидке пользователю: ', getRollbackMessage(fullPrice));
 console.log(`стоимость за вычетом процента отката посреднику ${servicePercentPrice} рублей`);
