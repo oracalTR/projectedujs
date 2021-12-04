@@ -63,9 +63,6 @@ const appData = {
     getServicePercentPrices(price, donat) {
         this.servicePercentPrice = Math.ceil(price - (price * (donat/100)));
     },
-    getServicePercentPrices(price, donat) {
-    this.servicePercentPrice = Math.ceil(price - (price * (donat/100)));
-    },
     getRollbackMessage(price) {
         if (price > 0 && price < 15000) {
             return `Стоимость сайта ${price} рублей - Скидка не предусмотрена`;
