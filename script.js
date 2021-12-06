@@ -50,8 +50,8 @@ const appData = {
         for(let key in appData.services) {
             this.allServicePrices += appData.services[key];
         }
-        this.screenPrice = this.screens.reduce((prices) => {
-            return prices.price += prices.price;
+        this.screenPrice = this.screens.reduce((prices1, prices2) => {
+            return prices1.price + prices2.price;
         });
     },
     getFullPrice(price, service) {
