@@ -1,5 +1,19 @@
 'use strict';
 
+const h1Title = document.getElementsByTagName('h1');
+const btnHandler = document.getElementsByClassName('handler_btn');
+const btnScreen = document.querySelector('.screen-btn');
+const percents = document.querySelectorAll('.other-items.percent');
+const numbers = document.querySelectorAll('.other-items.number');
+const inputRange = document.querySelector('.rollback > div > input');
+const spanRangeValue = document.querySelector('.rollback > div > .range-value');
+const inputHtml = document.getElementsByClassName('total-input')[0];
+const inputScreens = document.getElementsByClassName('total-input')[1];
+const inputService = document.getElementsByClassName('total-input')[2];
+const inputFullPrice = document.getElementsByClassName('total-input')[3];
+const inputrollback = document.getElementsByClassName('total-input')[4];
+let screens = document.querySelectorAll('.screen');
+
 const appData = {
     title: '',
     screens: [],
