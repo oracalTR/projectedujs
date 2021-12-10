@@ -91,13 +91,20 @@ const appData = {
     getDonateDezing(price, donat) {
         return this.fullPrice * (this.rollback/100);
     },
+    init() {
+        this.start();
+        this.addTitle();
+    },
+    addTitle() {
+        console.log(title);
+    },
     start() {
-        this.asking();
-        this.getTitle(this.title);
-        this.addPrices();
-        this.getFullPrice(this.screenPrice, this.allServicePrices);
-        this.getServicePercentPrices(this.fullPrice, this.rollback);
-        this.logger();
+        // this.asking();
+        // this.getTitle(this.title);
+        // this.addPrices();
+        // this.getFullPrice(this.screenPrice, this.allServicePrices);
+        // this.getServicePercentPrices(this.fullPrice, this.rollback);
+        // this.logger();
     },
     logger() {
         for (let key in appData) {
@@ -118,4 +125,4 @@ const appData = {
 };
 
 
-appData.start();
+appData.init();
