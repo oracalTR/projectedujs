@@ -27,7 +27,7 @@ const appData = {
     servicePricesNumber: 0,
     screenCount: 0,
     isError(screnns) {
-        let isError = true;
+        let isError = [];
         this.screens = [];
         screens = document.querySelectorAll('.screen');
         screens.forEach((elem, index) => {
@@ -44,7 +44,6 @@ const appData = {
                     mainControlsSelect.insertAdjacentElement('beforeend', pError);
                 }
                 select.style.backgroundColor = '#ffc7c7';
-                isError = true;
             } else if(!parseInt(input.value)) {
                 if(mainControlsSelect.querySelector('p')) {
                     mainControlsSelect.removeChild(mainControlsSelect.querySelector('p'));
@@ -55,16 +54,23 @@ const appData = {
                 }
                 select.style.backgroundColor = '#fff';
                 input.style.backgroundColor = '#ffc7c7';
-                isError = true;
             } else {
+                if(mainControlsSelect.querySelector('p')) {
+                    mainControlsSelect.removeChild(mainControlsSelect.querySelector('p'));
+                }
                 if(mainControlsInput.querySelector('p')) {
                     mainControlsInput.removeChild(mainControlsInput.querySelector('p'));
                 }
                 select.style.backgroundColor = '#fff';
                 input.style.backgroundColor = '#fff';
-                isError = false;
+                isError.push(false);
             }
         });
+        if(isError.length < screens.length) {
+            isError = true;
+        } else {
+            isError = false;
+        }
         return isError;
     },
     clearValues() {
