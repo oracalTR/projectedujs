@@ -2,6 +2,7 @@
 
 const h1Title = document.querySelector('h1');
 const btnHandler = document.getElementById('start');
+const btnReset = document.getElementById('reset');
 const btnScreen = document.querySelector('.screen-btn');
 const otherPercents = document.querySelectorAll('.other-items.percent');
 const otherNumbers = document.querySelectorAll('.other-items.number');
@@ -12,6 +13,7 @@ const inputScreens = document.getElementsByClassName('total-input')[1];
 const inputService = document.getElementsByClassName('total-input')[2];
 const inputFullPrice = document.getElementsByClassName('total-input')[3];
 const inputRollback = document.getElementsByClassName('total-input')[4];
+const cmsOpen = document.querySelector('#cms-open');
 let screens = document.querySelectorAll('.screen');
 
 const appData = {
@@ -100,6 +102,45 @@ const appData = {
             return count1 + count2.screenCount;
         }, 0);
     },
+    disabledNodes() {
+        screens.forEach( elem => {
+            const select = elem.querySelector('select');
+            const input = elem.querySelector('input');
+            select.setAttribute('disabled', 'disabled');
+            input.setAttribute('disabled', 'disabled');
+        });
+        otherPercents.forEach( elem => {
+            const input = elem.querySelector('input');
+            input.setAttribute('disabled', 'disabled');
+        });
+        otherNumbers.forEach( elem => {
+            const input = elem.querySelector('input');
+            input.setAttribute('disabled', 'disabled');
+        });
+        cmsOpen.setAttribute('disabled', 'disabled');
+    },
+    anabledNodes() {
+        screens.forEach( elem => {
+            const select = elem.querySelector('select');
+            const input = elem.querySelector('input');
+            select.removeAttribute('disabled');
+            input.removeAttribute('disabled');
+        });
+        otherPercents.forEach( elem => {
+            const input = elem.querySelector('input');
+            input.removeAttribute('disabled');
+        });
+        otherNumbers.forEach( elem => {
+            const input = elem.querySelector('input');
+            input.removeAttribute('disabled');
+        });
+        cmsOpen.removeAttribute('disabled');
+    },
+    reset() {
+        this.screens = [];
+        console.log(screens);
+        this.showResult();
+    },
     init() {
         this.addTitle();
         inputRange.addEventListener('input', () => {
@@ -117,7 +158,19 @@ const appData = {
             this.clearValues();
             if(!this.isError()) {
                 this.start();
+                btnHandler.style.display = 'none';
+                btnReset.style.display = 'block';
+                btnScreen.style.display = 'none';
+                this.disabledNodes();
             }
+        });
+        btnReset.addEventListener('click', event => {
+            event.preventDefault();
+            this.anabledNodes();
+            btnHandler.style.display = 'block';
+            btnReset.style.display = 'none';
+            btnScreen.style.display = 'block';
+            this.reset();
         });
         btnScreen.addEventListener('click', (event) => {
             event.preventDefault();
