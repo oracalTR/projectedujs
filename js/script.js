@@ -28,7 +28,7 @@ const appData = {
     servicePercentPrice: 0,
     servicePricesPercent: 0,
     servicePricesNumber: 0,
-    cmsPricesPercent: [],
+    cmsPricesPercent: {},
     screenCount: 0,
     isError(screnns) {
         let isError = [];
@@ -74,36 +74,38 @@ const appData = {
         if(isError.length < screens.length) {
             isError = true;
         } else if(cmsOpen.checked) {
-            
+            let isErorrCms = false;
             const select = hiddenCmsVariants.querySelector('#cms-select');
             const userSelect = hiddenCmsVariants.querySelector('.main-controls__input');
-            const selectIndexId = select.options.selectedIndex;
-            console.log(select[selectIndexId].value);
+            const selectIndexId = select.selectedIndex;
             //*Проверка типа cms
+            if(parseInt(select[selectIndexId].value) > 0) {
+                isError = false;
+            }
             if(!parseInt(select[selectIndexId].value) && select[selectIndexId].value !== 'other') {
+                const mainControlsSelect = hiddenCmsVariants.querySelector('.main-controls__select');
                 const pError = document.createElement('p');
                 pError.style.color = 'red';
                 pError.style.fontSize = 12 + 'px';  
                 pError.textContent = '*Неоходимо выбрать тип cms!';
-                if(!hiddenCmsVariants.querySelector('p')) {
-                    hiddenCmsVariants.insertAdjacentElement('beforeend', pError);
+                if(!mainControlsSelect.querySelector('p')) {
+                    mainControlsSelect.insertAdjacentElement('beforeend', pError);
                 }
                 select.style.backgroundColor = '#ffc7c7';
-                isError = true;
+                isErorrCms = true;
             } else {
-                if(hiddenCmsVariants.querySelector('p')) {
-                    hiddenCmsVariants.removeChild(hiddenCmsVariants.querySelector('p'));
+                const mainControlsSelect = hiddenCmsVariants.querySelector('.main-controls__select');
+                if(mainControlsSelect.querySelector('p')) {
+                    mainControlsSelect.removeChild(mainControlsSelect.querySelector('p'));
                 }
                 select.style.backgroundColor = '#fff';
-                isError = false;
+                isErorrCms = false;
             }
             //Другая cms
             
             if(select[selectIndexId].value == 'other') {
                 const userCmsInput = document.querySelector('#cms-other-input');
-                console.log('userinput', userCmsInput);
                 if(!parseInt(userCmsInput.value)) {
-                    console.log('Ошибка другая cms');
                     const pError = document.createElement('p');
                     pError.style.color = 'red';
                     pError.style.fontSize = 12 + 'px';  
@@ -112,22 +114,25 @@ const appData = {
                     if(!userCmsPercent.querySelector('p')) {
                         userCmsPercent.insertAdjacentElement('beforeend', pError);
                     }
-                    // div main-controls__input
-                    // input cms-other-input
                     userCmsInput.style.backgroundColor = '#ffc7c7';
-                    isError = true;
-                } 
-                
-            } else {
-                console.log('Зря зашли');
-                const userCmsPercent = hiddenCmsVariants.querySelector('.main-controls__input');
-                if(userCmsPercent.querySelector('p')) {
-                    userCmsPercent.removeChild(userCmsPercent.querySelector('p'));
+                    isErorrCms = true;
+                } else {
+                    const userCmsPercent = hiddenCmsVariants.querySelector('.main-controls__input');
+                    if(userCmsPercent.querySelector('p')) {
+                        userCmsPercent.removeChild(userCmsPercent.querySelector('p'));
+                    }
+                    const userCmsInput = document.querySelector('#cms-other-input');
+                    userCmsInput.style.backgroundColor = '#fff';
+                    
+                    if(isErorrCms) {
+                        isError = true;
+                    } else {
+                        isError = false;
+                    }
                 }
-                const userCmsInput = document.querySelector('#cms-other-input');
-                userCmsInput.style.backgroundColor = '#fff';
-                isError = false;
+                
             }
+                
             //*Конец проверки типа cms
         } else {
              isError = false;
@@ -151,11 +156,10 @@ const appData = {
             this.servicePricesNumber += this.servicesNumber[key];
         }
         for(let key in this.servicesPercent) {
-            console.log(typeof this.screenPrice);
-            console.log(typeof this.servicesPercent[key]);
             this.servicePricesPercent += this.screenPrice * (this.servicesPercent[key]/100);
         }
         this.fullPrice = this.screenPrice + this.servicePricesNumber + this.servicePricesPercent;
+        this.fullPrice += this.fullPrice * (this.cmsPricesPercent.percent/100); 
         this.servicePercentPrice = Math.ceil(this.fullPrice - (this.fullPrice * (this.rollback/100)));
         this.screenCount = this.screens.reduce( (count1, count2) => {
             return count1 + count2.screenCount;
@@ -179,6 +183,8 @@ const appData = {
         cmsOpen.setAttribute('disabled', 'disabled');
         const select = hiddenCmsVariants.querySelector('#cms-select');
         select.setAttribute('disabled', 'disabled');
+        const userInputCms = hiddenCmsVariants.querySelector('#cms-other-input');
+        userInputCms.setAttribute('disabled', 'disabled');
     },
     enabledNodes() {
         screens.forEach( elem => {
@@ -202,8 +208,11 @@ const appData = {
         const select = hiddenCmsVariants.querySelector('#cms-select');
         select.removeAttribute('disabled');
         select.options.selectedIndex = 0;
-        console.dir(select);
         hiddenCmsVariants.style.display = 'none';
+        hiddenCmsVariants.querySelector('.main-controls__input > input').value = '';
+        hiddenCmsVariants.querySelector('.main-controls__input').style.display = 'none';
+        const userInputCms = hiddenCmsVariants.querySelector('#cms-other-input');
+        userInputCms.removeAttribute('disabled');
     },
     reset() {
         this.screens = [];
@@ -269,7 +278,6 @@ const appData = {
         });
         btnScreen.addEventListener('click', (event) => {
             event.preventDefault();
-            console.log('click');
             this.addScreenBlock();
         });
         cmsOpen.addEventListener('input', () => {
@@ -357,18 +365,17 @@ const appData = {
         if(parseInt(selectCmsPercent)) {
             const namecms = select.options[select.selectedIndex].textContent;
             const percent = selectCmsPercent;
-            this.cmsPricesPercent.push({
+            this.cmsPricesPercent = {
                 namecms: namecms,
                 percent: +percent
-            });
+            };
         } else if(selectCmsPercent == 'other' &&  parseInt(userPercent)){
             const namecms = select.options[select.selectedIndex].textContent;
-            this.cmsPricesPercent.push({
+            this.cmsPricesPercent = {
                 namecms: namecms,
                 percent: +userPercent
-            });
+            };
         }
-        //console.log('CMS массив', this.cmsPricesPercent[0].percent);
     },
     addScreenBlock() {
         screens = document.querySelectorAll('.screen');
@@ -383,6 +390,7 @@ const appData = {
         //         console.log('Метод appData: ', key);
         //     }
         // }
+        console.log('CMS percent', appData.cmsPricesPercent.percent);
         console.log(appData.screens);
         console.log('fullPrice ', this.fullPrice);
         console.log('this.servicePercentPrice ', this.servicePercentPrice);
