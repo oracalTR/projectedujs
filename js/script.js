@@ -3,7 +3,7 @@
 const h1Title = document.querySelector('h1');
 const btnHandler = document.getElementById('start');
 const btnReset = document.getElementById('reset');
-const btnScreen = document.querySelector('.screen-btn');
+let btnScreen = document.querySelector('.screen-btn');
 const otherPercents = document.querySelectorAll('.other-items.percent');
 const otherNumbers = document.querySelectorAll('.other-items.number');
 const inputRange = document.querySelector('.rollback > div > input');
@@ -15,6 +15,7 @@ const inputFullPrice = document.getElementsByClassName('total-input')[3];
 const inputRollback = document.getElementsByClassName('total-input')[4];
 const cmsOpen = document.querySelector('#cms-open');
 let screens = document.querySelectorAll('.screen');
+const hiddenCmsVariants = document.querySelector('.hidden-cms-variants');
 
 const appData = {
     screens: [],
@@ -27,6 +28,7 @@ const appData = {
     servicePercentPrice: 0,
     servicePricesPercent: 0,
     servicePricesNumber: 0,
+    cmsPricesPercent: [],
     screenCount: 0,
     isError(screnns) {
         let isError = [];
@@ -37,6 +39,7 @@ const appData = {
             const input = elem.querySelector('input');
             const mainControlsSelect = elem.querySelector('.main-controls__select');
             const mainControlsInput = elem.querySelector('.main-controls__input');
+            const userCmsPercent = hiddenCmsVariants.querySelector('.main-controls__input');
             const pError = document.createElement('p');
             pError.style.color = 'red';
             pError.style.fontSize = 12 + 'px';
@@ -70,8 +73,64 @@ const appData = {
         });
         if(isError.length < screens.length) {
             isError = true;
+        } else if(cmsOpen.checked) {
+            
+            const select = hiddenCmsVariants.querySelector('#cms-select');
+            const userSelect = hiddenCmsVariants.querySelector('.main-controls__input');
+            const selectIndexId = select.options.selectedIndex;
+            console.log(select[selectIndexId].value);
+            //*Проверка типа cms
+            if(!parseInt(select[selectIndexId].value) && select[selectIndexId].value !== 'other') {
+                const pError = document.createElement('p');
+                pError.style.color = 'red';
+                pError.style.fontSize = 12 + 'px';  
+                pError.textContent = '*Неоходимо выбрать тип cms!';
+                if(!hiddenCmsVariants.querySelector('p')) {
+                    hiddenCmsVariants.insertAdjacentElement('beforeend', pError);
+                }
+                select.style.backgroundColor = '#ffc7c7';
+                isError = true;
+            } else {
+                if(hiddenCmsVariants.querySelector('p')) {
+                    hiddenCmsVariants.removeChild(hiddenCmsVariants.querySelector('p'));
+                }
+                select.style.backgroundColor = '#fff';
+                isError = false;
+            }
+            //Другая cms
+            
+            if(select[selectIndexId].value == 'other') {
+                const userCmsInput = document.querySelector('#cms-other-input');
+                console.log('userinput', userCmsInput);
+                if(!parseInt(userCmsInput.value)) {
+                    console.log('Ошибка другая cms');
+                    const pError = document.createElement('p');
+                    pError.style.color = 'red';
+                    pError.style.fontSize = 12 + 'px';  
+                    pError.textContent = '*Неоходимо ввести % (число)!';
+                    const userCmsPercent = hiddenCmsVariants.querySelector('.main-controls__input');
+                    if(!userCmsPercent.querySelector('p')) {
+                        userCmsPercent.insertAdjacentElement('beforeend', pError);
+                    }
+                    // div main-controls__input
+                    // input cms-other-input
+                    userCmsInput.style.backgroundColor = '#ffc7c7';
+                    isError = true;
+                } 
+                
+            } else {
+                console.log('Зря зашли');
+                const userCmsPercent = hiddenCmsVariants.querySelector('.main-controls__input');
+                if(userCmsPercent.querySelector('p')) {
+                    userCmsPercent.removeChild(userCmsPercent.querySelector('p'));
+                }
+                const userCmsInput = document.querySelector('#cms-other-input');
+                userCmsInput.style.backgroundColor = '#fff';
+                isError = false;
+            }
+            //*Конец проверки типа cms
         } else {
-            isError = false;
+             isError = false;
         }
         return isError;
     },
@@ -118,8 +177,10 @@ const appData = {
             input.setAttribute('disabled', 'disabled');
         });
         cmsOpen.setAttribute('disabled', 'disabled');
+        const select = hiddenCmsVariants.querySelector('#cms-select');
+        select.setAttribute('disabled', 'disabled');
     },
-    anabledNodes() {
+    enabledNodes() {
         screens.forEach( elem => {
             const select = elem.querySelector('select');
             const input = elem.querySelector('input');
@@ -129,17 +190,54 @@ const appData = {
         otherPercents.forEach( elem => {
             const input = elem.querySelector('input');
             input.removeAttribute('disabled');
+            input.checked = false;
         });
         otherNumbers.forEach( elem => {
             const input = elem.querySelector('input');
             input.removeAttribute('disabled');
+            input.checked = false;
         });
         cmsOpen.removeAttribute('disabled');
+        cmsOpen.checked = false;
+        const select = hiddenCmsVariants.querySelector('#cms-select');
+        select.removeAttribute('disabled');
+        select.options.selectedIndex = 0;
+        console.dir(select);
+        hiddenCmsVariants.style.display = 'none';
     },
     reset() {
         this.screens = [];
-        console.log(screens);
-        this.showResult();
+        this.cmsPricesPercent = [];
+        screens = document.querySelectorAll('.screen');
+        const parentScreen = screens[0].parentNode;
+        parentScreen.innerHTML = '';
+        parentScreen.insertAdjacentHTML('afterbegin', `
+            <h3>Расчет по типу экрана</h3>
+            <div class="main-controls__item screen">
+            <div class="main-controls__select">
+                    <select name="views-select">
+                    <option value="" selected>Тип экранов</option>
+                        <option value="500">Простых 500руб * n</option>
+                        <option value="700">Сложных 700руб * n</option>
+                        <option value="800">Интерактивных 800руб * n</option>
+                        <option value="100">Форм 100руб * n</option>
+                        <option value="300">Слайдеров 300руб * n</option>
+                        <option value="200">Модальные окна 200руб * n</option>
+                        <option value="100">Анимация в блоках 100руб * n</option>
+                        </select>
+                </div>
+                <div class="main-controls__input">
+                <input type="text" placeholder="Количество экранов">
+                </div>
+            </div>
+            
+            <button class="screen-btn">+</button>
+            `);
+            btnScreen = document.querySelector('.screen-btn');
+            btnHandler.style.display = 'block';
+            btnReset.style.display = 'none';
+            this.clearValues();
+            this.init();
     },
     init() {
         this.addTitle();
@@ -166,15 +264,36 @@ const appData = {
         });
         btnReset.addEventListener('click', event => {
             event.preventDefault();
-            this.anabledNodes();
-            btnHandler.style.display = 'block';
-            btnReset.style.display = 'none';
-            btnScreen.style.display = 'block';
+            this.enabledNodes();
             this.reset();
         });
         btnScreen.addEventListener('click', (event) => {
             event.preventDefault();
+            console.log('click');
             this.addScreenBlock();
+        });
+        cmsOpen.addEventListener('input', () => {
+            hiddenCmsVariants.style.display = 'flex';
+            if(cmsOpen.checked) {
+                hiddenCmsVariants.style.display = 'flex';
+            } else {
+                const select = hiddenCmsVariants.querySelector('select');
+                select.options.selectedIndex = 0;
+                hiddenCmsVariants.style.display = 'none';
+                const userPercentInput = hiddenCmsVariants.querySelector('.main-controls__input');
+                userPercentInput.style.display = 'none';
+            }
+            const select = hiddenCmsVariants.querySelector('select');
+            select.addEventListener('input', () => {
+                if(select[select.options.selectedIndex].value == 'other') {
+                    const userPercentInput = hiddenCmsVariants.querySelector('.main-controls__input');
+                    userPercentInput.style.display = 'block';
+                } else {
+                    const userPercentInput = hiddenCmsVariants.querySelector('.main-controls__input');
+                    userPercentInput.style.display = 'none';
+                }
+            });
+            this.addCmsPrice();
         });
     },
     addTitle() {
@@ -183,6 +302,7 @@ const appData = {
     start() {
         this.addScreens();
         this.addServices();
+        this.addCmsPrice();
         this.addPrices();
         this.showResult();
         this.logger();
@@ -229,7 +349,29 @@ const appData = {
             }
         });
     },
+    addCmsPrice() {
+        this.cmsPricesPercent = [];
+        const select = hiddenCmsVariants.querySelector('select');
+        const selectCmsPercent = select.options[select.selectedIndex].value;
+        const userPercent = hiddenCmsVariants.querySelector('#cms-other-input').value;
+        if(parseInt(selectCmsPercent)) {
+            const namecms = select.options[select.selectedIndex].textContent;
+            const percent = selectCmsPercent;
+            this.cmsPricesPercent.push({
+                namecms: namecms,
+                percent: +percent
+            });
+        } else if(selectCmsPercent == 'other' &&  parseInt(userPercent)){
+            const namecms = select.options[select.selectedIndex].textContent;
+            this.cmsPricesPercent.push({
+                namecms: namecms,
+                percent: +userPercent
+            });
+        }
+        //console.log('CMS массив', this.cmsPricesPercent[0].percent);
+    },
     addScreenBlock() {
+        screens = document.querySelectorAll('.screen');
         const cloneScreen = screens[0].cloneNode(true);
         screens[screens.length - 1].after(cloneScreen);
     },
