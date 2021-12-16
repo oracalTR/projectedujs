@@ -161,9 +161,7 @@ const appData = {
         this.fullPrice = this.screenPrice + this.servicePricesNumber + this.servicePricesPercent;
 
         this.fullPrice += this.fullPrice * (this.cmsPricesPercent.percent/100); 
-        debugger;
         this.servicePercentPrice = Math.ceil(this.fullPrice - (this.fullPrice * (this.rollback/100)));
-        debugger;
         this.screenCount = this.screens.reduce( (count1, count2) => {
             return count1 + count2.screenCount;
         }, 0);
