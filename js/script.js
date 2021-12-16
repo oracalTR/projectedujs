@@ -28,7 +28,7 @@ const appData = {
     servicePercentPrice: 0,
     servicePricesPercent: 0,
     servicePricesNumber: 0,
-    cmsPricesPercent: {},
+    cmsPricesPercent: {percent: 0},
     screenCount: 0,
     isError(screnns) {
         let isError = [];
@@ -159,8 +159,11 @@ const appData = {
             this.servicePricesPercent += this.screenPrice * (this.servicesPercent[key]/100);
         }
         this.fullPrice = this.screenPrice + this.servicePricesNumber + this.servicePricesPercent;
+
         this.fullPrice += this.fullPrice * (this.cmsPricesPercent.percent/100); 
+        debugger;
         this.servicePercentPrice = Math.ceil(this.fullPrice - (this.fullPrice * (this.rollback/100)));
+        debugger;
         this.screenCount = this.screens.reduce( (count1, count2) => {
             return count1 + count2.screenCount;
         }, 0);
@@ -216,7 +219,10 @@ const appData = {
     },
     reset() {
         this.screens = [];
-        this.cmsPricesPercent = [];
+        this.cmsPricesPercent = {percent: 0};
+        inputRange.value = 0;
+        spanRangeValue.textContent = inputRange.value + '%';
+        this.rollback = 0;
         screens = document.querySelectorAll('.screen');
         const parentScreen = screens[0].parentNode;
         parentScreen.innerHTML = '';
@@ -358,7 +364,7 @@ const appData = {
         });
     },
     addCmsPrice() {
-        this.cmsPricesPercent = [];
+        this.cmsPricesPercent = {percent: 0};
         const select = hiddenCmsVariants.querySelector('select');
         const selectCmsPercent = select.options[select.selectedIndex].value;
         const userPercent = hiddenCmsVariants.querySelector('#cms-other-input').value;
